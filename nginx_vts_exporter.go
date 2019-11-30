@@ -31,10 +31,10 @@ type NginxVts struct {
 		Handled  uint64 `json:"handled"`
 		Requests uint64 `json:"requests"`
 	} `json:"connections"`
-	ServerZones   map[string]Server              `json:"serverZones"`
-	UpstreamZones map[string][]Upstream          `json:"upstreamZones"`
-	FilterZones   map[string]map[string]Upstream `json:"filterZones"`
-	CacheZones    map[string]Cache               `json:"cacheZones"`
+	ServerZones   map[string]Server            `json:"serverZones"`
+	UpstreamZones map[string][]Upstream        `json:"upstreamZones"`
+	FilterZones   map[string]map[string]Filter `json:"filterZones"`
+	CacheZones    map[string]Cache             `json:"cacheZones"`
 }
 
 type Server struct {
@@ -107,6 +107,49 @@ type Upstream struct {
 		ThreeXx        uint64  `json:"3xx"`
 		FourXx         uint64  `json:"4xx"`
 		FiveXx         uint64  `json:"5xx"`
+	} `json:"overCounts"`
+}
+
+type Filter struct {
+	Server         string `json:"server"`
+	RequestCounter uint64 `json:"requestCounter"`
+	InBytes        uint64 `json:"inBytes"`
+	OutBytes       uint64 `json:"outBytes"`
+	RequestMsec    uint64 `json:"requestMsec"`
+	ResponseMsec   uint64 `json:"responseMsec"`
+	Responses      struct {
+		OneXx       uint64 `json:"1xx"`
+		TwoXx       uint64 `json:"2xx"`
+		ThreeXx     uint64 `json:"3xx"`
+		FourXx      uint64 `json:"4xx"`
+		FiveXx      uint64 `json:"5xx"`
+		Miss        uint64 `json:"miss"`
+		Bypass      uint64 `json:"bypass"`
+		Expired     uint64 `json:"expired"`
+		Stale       uint64 `json:"stale"`
+		Updating    uint64 `json:"updating"`
+		Revalidated uint64 `json:"revalidated"`
+		Hit         uint64 `json:"hit"`
+		Scarce      uint64 `json:"scarce"`
+	} `json:"responses"`
+	OverCounts struct {
+		MaxIntegerSize float64 `json:"maxIntegerSize"`
+		RequestCounter uint64  `json:"requestCounter"`
+		InBytes        uint64  `json:"inBytes"`
+		OutBytes       uint64  `json:"outBytes"`
+		OneXx          uint64  `json:"1xx"`
+		TwoXx          uint64  `json:"2xx"`
+		ThreeXx        uint64  `json:"3xx"`
+		FourXx         uint64  `json:"4xx"`
+		FiveXx         uint64  `json:"5xx"`
+		Miss           uint64  `json:"miss"`
+		Bypass         uint64  `json:"bypass"`
+		Expired        uint64  `json:"expired"`
+		Stale          uint64  `json:"stale"`
+		Updating       uint64  `json:"updating"`
+		Revalidated    uint64  `json:"revalidated"`
+		Hit            uint64  `json:"hit"`
+		Scarce         uint64  `json:"scarce"`
 	} `json:"overCounts"`
 }
 
