@@ -181,10 +181,10 @@ func NewExporter(uri string) *Exporter {
 		infoMetric: newServerMetric("info", "nginx info", []string{"hostName", "nginxVersion"}),
 		serverMetrics: map[string]*prometheus.Desc{
 			"connections": newServerMetric("connections", "nginx connections", []string{"status"}),
-			"requests":    newServerMetric("requests", "requests counter", []string{"host", "code"}),
-			"bytes":       newServerMetric("bytes", "request/response bytes", []string{"host", "direction"}),
-			"cache":       newServerMetric("cache", "cache counter", []string{"host", "status"}),
-			"requestMsec": newServerMetric("requestMsec", "average of request processing times in milliseconds", []string{"host"}),
+			"requests":    newServerMetric("requests", "requests counter", []string{"server_zone", "environment", "code"}),
+			"bytes":       newServerMetric("bytes", "request/response bytes", []string{"server_zone", "environment", "direction"}),
+			"cache":       newServerMetric("cache", "cache counter", []string{"server_zone", "environment", "status"}),
+			"requestMsec": newServerMetric("requestMsec", "average of request processing times in milliseconds", []string{"server_zone", "environment"}),
 		},
 		upstreamMetrics: map[string]*prometheus.Desc{
 			"requests":     newUpstreamMetric("requests", "requests counter", []string{"upstream", "code", "backend"}),
@@ -256,26 +256,26 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 
 	// ServerZones
 	for host, s := range nginxVtx.ServerZones {
-		ch <- prometheus.MustNewConstMetric(e.serverMetrics["requests"], prometheus.CounterValue, float64(s.RequestCounter), host, "total")
-		ch <- prometheus.MustNewConstMetric(e.serverMetrics["requests"], prometheus.CounterValue, float64(s.Responses.OneXx), host, "1xx")
-		ch <- prometheus.MustNewConstMetric(e.serverMetrics["requests"], prometheus.CounterValue, float64(s.Responses.TwoXx), host, "2xx")
-		ch <- prometheus.MustNewConstMetric(e.serverMetrics["requests"], prometheus.CounterValue, float64(s.Responses.ThreeXx), host, "3xx")
-		ch <- prometheus.MustNewConstMetric(e.serverMetrics["requests"], prometheus.CounterValue, float64(s.Responses.FourXx), host, "4xx")
-		ch <- prometheus.MustNewConstMetric(e.serverMetrics["requests"], prometheus.CounterValue, float64(s.Responses.FiveXx), host, "5xx")
+		ch <- prometheus.MustNewConstMetric(e.serverMetrics["requests"], prometheus.CounterValue, float64(s.RequestCounter), host, "unknown", "total")
+		ch <- prometheus.MustNewConstMetric(e.serverMetrics["requests"], prometheus.CounterValue, float64(s.Responses.OneXx), host, "unknown", "1xx")
+		ch <- prometheus.MustNewConstMetric(e.serverMetrics["requests"], prometheus.CounterValue, float64(s.Responses.TwoXx), host, "unknown", "2xx")
+		ch <- prometheus.MustNewConstMetric(e.serverMetrics["requests"], prometheus.CounterValue, float64(s.Responses.ThreeXx), host, "unknown", "3xx")
+		ch <- prometheus.MustNewConstMetric(e.serverMetrics["requests"], prometheus.CounterValue, float64(s.Responses.FourXx), host, "unknown", "4xx")
+		ch <- prometheus.MustNewConstMetric(e.serverMetrics["requests"], prometheus.CounterValue, float64(s.Responses.FiveXx), host, "unknown", "5xx")
 
-		ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(s.Responses.Bypass), host, "bypass")
-		ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(s.Responses.Expired), host, "expired")
-		ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(s.Responses.Hit), host, "hit")
-		ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(s.Responses.Miss), host, "miss")
-		ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(s.Responses.Revalidated), host, "revalidated")
-		ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(s.Responses.Scarce), host, "scarce")
-		ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(s.Responses.Stale), host, "stale")
-		ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(s.Responses.Updating), host, "updating")
+		ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(s.Responses.Bypass), host, "unknown", "bypass")
+		ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(s.Responses.Expired), host, "unknown", "expired")
+		ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(s.Responses.Hit), host, "unknown", "hit")
+		ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(s.Responses.Miss), host, "unknown", "miss")
+		ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(s.Responses.Revalidated), host, "unknown", "revalidated")
+		ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(s.Responses.Scarce), host, "unknown", "scarce")
+		ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(s.Responses.Stale), host, "unknown", "stale")
+		ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(s.Responses.Updating), host, "unknown", "updating")
 
-		ch <- prometheus.MustNewConstMetric(e.serverMetrics["bytes"], prometheus.CounterValue, float64(s.InBytes), host, "in")
-		ch <- prometheus.MustNewConstMetric(e.serverMetrics["bytes"], prometheus.CounterValue, float64(s.OutBytes), host, "out")
+		ch <- prometheus.MustNewConstMetric(e.serverMetrics["bytes"], prometheus.CounterValue, float64(s.InBytes), host, "unknown", "in")
+		ch <- prometheus.MustNewConstMetric(e.serverMetrics["bytes"], prometheus.CounterValue, float64(s.OutBytes), host, "unknown", "out")
 
-		ch <- prometheus.MustNewConstMetric(e.serverMetrics["requestMsec"], prometheus.GaugeValue, float64(s.RequestMsec), host)
+		ch <- prometheus.MustNewConstMetric(e.serverMetrics["requestMsec"], prometheus.GaugeValue, float64(s.RequestMsec), host, "unknown")
 
 	}
 
@@ -300,6 +300,28 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 	// FilterZones
 	for filter, values := range nginxVtx.FilterZones {
 		for name, stat := range values {
+			// Environments by filter
+			ch <- prometheus.MustNewConstMetric(e.serverMetrics["requestMsec"], prometheus.GaugeValue, float64(stat.RequestMsec), "environment", name)
+			ch <- prometheus.MustNewConstMetric(e.serverMetrics["requests"], prometheus.CounterValue, float64(stat.RequestCounter), "environment", name, "total")
+			ch <- prometheus.MustNewConstMetric(e.serverMetrics["requests"], prometheus.CounterValue, float64(stat.Responses.OneXx), "environment", name, "1xx")
+			ch <- prometheus.MustNewConstMetric(e.serverMetrics["requests"], prometheus.CounterValue, float64(stat.Responses.TwoXx), "environment", name, "2xx")
+			ch <- prometheus.MustNewConstMetric(e.serverMetrics["requests"], prometheus.CounterValue, float64(stat.Responses.ThreeXx), "environment", name, "3xx")
+			ch <- prometheus.MustNewConstMetric(e.serverMetrics["requests"], prometheus.CounterValue, float64(stat.Responses.FourXx), "environment", name, "4xx")
+			ch <- prometheus.MustNewConstMetric(e.serverMetrics["requests"], prometheus.CounterValue, float64(stat.Responses.FiveXx), "environment", name, "5xx")
+
+			ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(stat.Responses.Bypass), "environment", name, "bypass")
+			ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(stat.Responses.Expired), "environment", name, "expired")
+			ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(stat.Responses.Hit), "environment", name, "hit")
+			ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(stat.Responses.Miss), "environment", name, "miss")
+			ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(stat.Responses.Revalidated), "environment", name, "revalidated")
+			ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(stat.Responses.Scarce), "environment", name, "scarce")
+			ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(stat.Responses.Stale), "environment", name, "stale")
+			ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(stat.Responses.Updating), "environment", name, "updating")
+
+			ch <- prometheus.MustNewConstMetric(e.serverMetrics["bytes"], prometheus.CounterValue, float64(stat.InBytes), "environment", name, "in")
+			ch <- prometheus.MustNewConstMetric(e.serverMetrics["bytes"], prometheus.CounterValue, float64(stat.OutBytes), "environment", name, "out")
+
+			// Default filter values
 			ch <- prometheus.MustNewConstMetric(e.filterMetrics["responseMsec"], prometheus.GaugeValue, float64(stat.ResponseMsec), filter, name)
 			ch <- prometheus.MustNewConstMetric(e.filterMetrics["requestMsec"], prometheus.GaugeValue, float64(stat.RequestMsec), filter, name)
 			ch <- prometheus.MustNewConstMetric(e.filterMetrics["requests"], prometheus.CounterValue, float64(stat.RequestCounter), filter, name, "total")
