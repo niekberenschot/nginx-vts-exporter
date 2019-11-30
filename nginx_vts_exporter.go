@@ -345,7 +345,6 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 		for name, stat := range values {
 			// Environments by filter
 			ch <- prometheus.MustNewConstMetric(e.serverMetrics["requestMsec"], prometheus.GaugeValue, float64(stat.RequestMsec), "server_zone", "container_name", name)
-			ch <- prometheus.MustNewConstMetric(e.serverMetrics["requests"], prometheus.CounterValue, float64(stat.RequestCounter), "server_zone", "container_name", name, "total")
 			ch <- prometheus.MustNewConstMetric(e.serverMetrics["requests"], prometheus.CounterValue, float64(stat.Responses.OneXx), "server_zone", "container_name", name, "1xx")
 			ch <- prometheus.MustNewConstMetric(e.serverMetrics["requests"], prometheus.CounterValue, float64(stat.Responses.TwoXx), "server_zone", "container_name", name, "2xx")
 			ch <- prometheus.MustNewConstMetric(e.serverMetrics["requests"], prometheus.CounterValue, float64(stat.Responses.ThreeXx), "server_zone", "container_name", name, "3xx")
